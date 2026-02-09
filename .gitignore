@@ -1,1 +1,7 @@
 node_modules/
+dist/
+.DS_Store
+.cursor/
+.mcp.json
+CLAUDE.md
+CLAUDE.local.md
