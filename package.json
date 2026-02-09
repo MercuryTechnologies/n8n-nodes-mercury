@@ -1,0 +1,55 @@
+{
+    "name": "n8n-nodes-mercury",
+    "version": "0.1.0",
+    "description": "n8n community node for Mercury banking.",
+    "license": "MIT",
+    "homepage": "https://github.com/MercuryTechnologies/n8n-nodes-mercury",
+    "keywords": [
+        "n8n-community-node-package",
+        "mercury",
+        "banking",
+        "finance",
+        "webhooks"
+    ],
+    "author": {
+        "name": "Chris O'Brien",
+        "email": "cobrien@mercury.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MercuryTechnologies/n8n-nodes-mercury.git"
+    },
+    "scripts": {
+        "build": "n8n-node build",
+        "build:watch": "tsc --watch",
+        "dev": "n8n-node dev",
+        "lint": "n8n-node lint",
+        "lint:fix": "n8n-node lint --fix",
+        "release": "n8n-node release",
+        "prepublishOnly": "n8n-node prerelease"
+    },
+    "files": [
+        "dist"
+    ],
+    "n8n": {
+        "n8nNodesApiVersion": 1,
+        "strict": true,
+        "credentials": [
+            "dist/credentials/MercuryApi.credentials.js"
+        ],
+        "nodes": [
+            "dist/nodes/Mercury/MercuryTrigger.node.js"
+        ]
+    },
+    "devDependencies": {
+        "@n8n/node-cli": "*",
+        "@types/node": "^25.2.3",
+        "eslint": "9.32.0",
+        "prettier": "3.6.2",
+        "release-it": "^19.0.4",
+        "typescript": "5.9.2"
+    },
+    "peerDependencies": {
+        "n8n-workflow": "*"
+    }
+}
