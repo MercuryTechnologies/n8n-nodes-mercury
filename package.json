@@ -38,7 +38,9 @@
             "dist/credentials/MercuryApi.credentials.js",
             "dist/credentials/MercuryOAuth2Api.credentials.js"
         ],
-        "nodes": []
+        "nodes": [
+            "dist/nodes/MercuryTrigger/MercuryTrigger.node.js"
+        ]
     },
     "devDependencies": {
         "@n8n/node-cli": "*",
