@@ -84,6 +84,22 @@ export class MercuryTrigger implements INodeType {
 				default: 'newTransaction',
 				options: [
 					{
+						name: 'Account Balance Update',
+						value: 'accountBalanceUpdate',
+						description:
+							'Triggers when a checking or savings account balance changes',
+					},
+					{
+						name: 'Cancelled Transaction',
+						value: 'cancelledTransaction',
+						description: 'Triggers when a transaction status changes to cancelled',
+					},
+					{
+						name: 'Failed Transaction',
+						value: 'failedTransaction',
+						description: 'Triggers when a transaction status changes to failed',
+					},
+					{
 						name: 'New Transaction',
 						value: 'newTransaction',
 						description: 'Triggers when a new transaction is created',
@@ -98,25 +114,10 @@ export class MercuryTrigger implements INodeType {
 						value: 'transactionUpdate',
 						description: 'Triggers on any transaction update',
 					},
-					{
-						name: 'Failed Transaction',
-						value: 'failedTransaction',
-						description: 'Triggers when a transaction status changes to failed',
-					},
-					{
-						name: 'Cancelled Transaction',
-						value: 'cancelledTransaction',
-						description: 'Triggers when a transaction status changes to cancelled',
-					},
-					{
-						name: 'Account Balance Update',
-						value: 'accountBalanceUpdate',
-						description:
-							'Triggers when a checking or savings account balance changes',
-					},
 				],
 			},
 		],
+		usableAsTool: true,
 	};
 
 	webhookMethods = {
@@ -158,7 +159,7 @@ export class MercuryTrigger implements INodeType {
 				if (webhookId) {
 					try {
 						await mercuryApiRequest.call(this, 'DELETE', `/webhooks/${webhookId}`);
-					} catch (error) {
+					} catch {
 						return false;
 					}
 				}
