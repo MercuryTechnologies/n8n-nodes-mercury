@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-mercury",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Finance & Accounting"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://docs.mercury.com/reference/authentication"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/MercuryTechnologies/n8n-nodes-mercury"
+			}
+		]
+	}
+}

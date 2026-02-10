@@ -12,10 +12,7 @@ export type MercuryWebhookEvent =
 	| 'transaction.created'
 	| 'transaction.updated'
 	| 'checkingAccount.balance.updated'
-	| 'savingsAccount.balance.updated'
-	| 'treasuryAccount.balance.updated'
-	| 'creditAccount.balance.updated'
-	| 'investmentAccount.balance.updated';
+	| 'savingsAccount.balance.updated';
 
 export const TRIGGER_TO_EVENTS: Record<TriggerType, MercuryWebhookEvent[]> = {
 	newTransaction: ['transaction.created'],
@@ -26,9 +23,6 @@ export const TRIGGER_TO_EVENTS: Record<TriggerType, MercuryWebhookEvent[]> = {
 	accountBalanceUpdate: [
 		'checkingAccount.balance.updated',
 		'savingsAccount.balance.updated',
-		'treasuryAccount.balance.updated',
-		'creditAccount.balance.updated',
-		'investmentAccount.balance.updated',
 	],
 };
 
