@@ -1,4 +1,3 @@
-import { createHmac, timingSafeEqual } from 'crypto';
 import type {
 	IDataObject,
 	IHookFunctions,
@@ -8,6 +7,7 @@ import type {
 	IWebhookResponseData,
 } from 'n8n-workflow';
 
+import { verifySignature } from './MercuryTriggerHelpers';
 import { mercuryApiRequest } from './shared/transport';
 import {
 	TRIGGER_FILTER_PATHS,
@@ -27,7 +27,7 @@ export class MercuryTrigger implements INodeType {
 		subtitle: '={{$parameter["triggerType"]}}',
 		description: 'Starts the workflow when Mercury events occur',
 		defaults: {
-			name: 'Mercury Trigger',
+			name: 'Mercury',
 		},
 		inputs: [],
 		outputs: ['main'],
@@ -35,20 +35,6 @@ export class MercuryTrigger implements INodeType {
 			{
 				name: 'mercuryApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: ['apiToken'],
-					},
-				},
-			},
-			{
-				name: 'mercuryOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: ['oAuth2'],
-					},
-				},
 			},
 		],
 		webhooks: [
@@ -61,58 +47,42 @@ export class MercuryTrigger implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'API Token',
-						value: 'apiToken',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-				],
-				default: 'oAuth2',
-			},
-			{
 				displayName: 'Trigger Type',
 				name: 'triggerType',
 				type: 'options',
 				required: true,
-				default: 'newTransaction',
+				default: 'transactionCreated',
 				options: [
 					{
-						name: 'Account Balance Update',
-						value: 'accountBalanceUpdate',
+						name: 'Account Balance Updated',
+						value: 'accountBalanceUpdated',
 						description:
 							'Triggers when a checking or savings account balance changes',
 					},
 					{
-						name: 'Cancelled Transaction',
-						value: 'cancelledTransaction',
+						name: 'Transaction Cancelled',
+						value: 'transactionCancelled',
 						description: 'Triggers when a transaction status changes to cancelled',
 					},
 					{
-						name: 'Failed Transaction',
-						value: 'failedTransaction',
-						description: 'Triggers when a transaction status changes to failed',
-					},
-					{
-						name: 'New Transaction',
-						value: 'newTransaction',
+						name: 'Transaction Created',
+						value: 'transactionCreated',
 						description: 'Triggers when a new transaction is created',
 					},
 					{
-						name: 'Settled Transaction',
-						value: 'settledTransaction',
+						name: 'Transaction Failed',
+						value: 'transactionFailed',
+						description: 'Triggers when a transaction status changes to failed',
+					},
+					{
+						name: 'Transaction Settled',
+						value: 'transactionSettled',
 						description: 'Triggers when a transaction status changes to settled',
 					},
 					{
-						name: 'Transaction Update',
-						value: 'transactionUpdate',
-						description: 'Triggers on any transaction update',
+						name: 'Transaction Updated',
+						value: 'transactionUpdated',
+						description: 'Triggers when any transaction field is updated',
 					},
 				],
 			},
@@ -174,41 +144,11 @@ export class MercuryTrigger implements INodeType {
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const body = this.getBodyData() as IDataObject;
-		const headers = this.getHeaderData();
 		const staticData = this.getWorkflowStaticData('node');
 		const secret = staticData.secret as string;
 
 		// Verify HMAC-SHA256 signature
-		const signatureHeader = headers['mercury-signature'] as string | undefined;
-		if (!signatureHeader || !secret) {
-			return { webhookResponse: 'Signature missing', workflowData: undefined };
-		}
-
-		const parts = signatureHeader.split(',');
-		const timestamp = parts.find((p) => p.startsWith('t='))?.slice(2);
-		const signature = parts.find((p) => p.startsWith('v1='))?.slice(3);
-
-		if (!timestamp || !signature) {
-			return { webhookResponse: 'Invalid signature format', workflowData: undefined };
-		}
-
-		// Reject webhooks older than 5 minutes to prevent replay attacks
-		const age = Math.abs(Date.now() / 1000 - Number(timestamp));
-		if (age > 300) {
-			return { webhookResponse: 'Timestamp too old', workflowData: undefined };
-		}
-
-		const req = this.getRequestObject();
-		const rawBody = req.rawBody ?? Buffer.from(JSON.stringify(body));
-		const signedPayload = `${timestamp}.${rawBody.toString()}`;
-		const expectedSignature = createHmac('sha256', secret)
-			.update(signedPayload)
-			.digest('hex');
-
-		const sigBuffer = Buffer.from(signature, 'hex');
-		const expectedBuffer = Buffer.from(expectedSignature, 'hex');
-
-		if (sigBuffer.length !== expectedBuffer.length || !timingSafeEqual(sigBuffer, expectedBuffer)) {
+		if (!verifySignature(this, secret)) {
 			return { webhookResponse: 'Invalid signature', workflowData: undefined };
 		}
 

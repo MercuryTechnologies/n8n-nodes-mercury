@@ -1,7 +1,7 @@
 {
     "name": "n8n-nodes-mercury",
     "version": "0.1.0",
-    "description": "n8n community node for Mercury banking — webhook triggers for transactions and account balances",
+    "description": "n8n community node for Mercury banking.",
     "license": "MIT",
     "homepage": "https://github.com/MercuryTechnologies/n8n-nodes-mercury",
     "keywords": [
@@ -35,11 +35,10 @@
         "n8nNodesApiVersion": 1,
         "strict": true,
         "credentials": [
-            "dist/credentials/MercuryApi.credentials.js",
-            "dist/credentials/MercuryOAuth2Api.credentials.js"
+            "dist/credentials/MercuryApi.credentials.js"
         ],
         "nodes": [
-            "dist/nodes/MercuryTrigger/MercuryTrigger.node.js"
+            "dist/nodes/Mercury/MercuryTrigger.node.js"
         ]
     },
     "devDependencies": {

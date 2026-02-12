@@ -4,7 +4,9 @@ import type {
 	IHttpRequestMethods,
 	IHttpRequestOptions,
 	IWebhookFunctions,
+	JsonObject,
 } from 'n8n-workflow';
+import { NodeApiError } from 'n8n-workflow';
 
 import { MERCURY_API_BASE_URL } from './constants';
 
@@ -26,9 +28,13 @@ export async function mercuryApiRequest(
 		options.body = body;
 	}
 
-	const authenticationMethod = this.getNodeParameter('authentication', 0) as string;
-	const credentialType =
-		authenticationMethod === 'apiToken' ? 'mercuryApi' : 'mercuryOAuth2Api';
-
-	return this.helpers.httpRequestWithAuthentication.call(this, credentialType, options);
+	try {
+		return await this.helpers.httpRequestWithAuthentication.call(this, 'mercuryApi', options);
+	} catch (error) {
+		const e = error as { message?: string; description?: string; cause?: object; body?: object };
+		throw new NodeApiError(this.getNode(), error as JsonObject, {
+			message: e.message ?? 'Mercury API request failed',
+			description: e.description ?? JSON.stringify(e.cause ?? e.body ?? error),
+		});
+	}
 }
