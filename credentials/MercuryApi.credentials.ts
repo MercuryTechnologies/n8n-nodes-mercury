@@ -13,7 +13,7 @@ export class MercuryApi implements ICredentialType {
 
 	icon: Icon = 'file:../icons/mercury.svg';
 
-	documentationUrl = 'https://docs.mercury.com/reference/authentication';
+	documentationUrl = 'https://docs.mercury.com/docs/getting-started';
 
 	properties: INodeProperties[] = [
 		{

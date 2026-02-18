@@ -46,13 +46,13 @@ The **Mercury** node starts your workflow when one of the following events occur
 5. Connect any downstream nodes to process the data (e.g., send a Slack message, update a spreadsheet).
 6. **Activate** the workflow.
 
-Once active, the workflow runs automatically whenever the selected event occurs in Mercury. The trigger outputs the full resource — for transaction events, this is the complete [transaction object](https://docs.mercury.com/reference/get-transaction); for balance events, the complete [account object](https://docs.mercury.com/reference/get-account).
+Once active, the workflow runs automatically whenever the selected event occurs in Mercury. The trigger outputs the full resource — for transaction events, this is the complete [transaction object](https://docs.mercury.com/reference/gettransaction); for balance events, the complete [account object](https://docs.mercury.com/reference/getaccount).
 
 To stop receiving events, deactivate the workflow. The webhook is cleaned up automatically.
 
 ## Architecture
 
-This node uses Mercury's [webhook API](https://docs.mercury.com/reference/create-webhook) with automatic lifecycle management:
+This node uses Mercury's [webhook API](https://docs.mercury.com/reference/createwebhook) with automatic lifecycle management:
 
 - **Activate workflow** — n8n registers a webhook with Mercury for the selected event type.
 - **Receive event** — Mercury sends a webhook notification. The node verifies the HMAC-SHA256 signature, then fetches the full resource (transaction or account) from the Mercury API.
