@@ -19,7 +19,7 @@ import {
 
 export class MercuryTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Mercury Trigger',
+		displayName: 'Mercury',
 		name: 'mercuryTrigger',
 		icon: 'file:../../icons/mercury.svg',
 		group: ['trigger'],
